@@ -3,6 +3,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Loader2, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
+import { CsvUpload } from "./CsvUpload";
 
 interface HeroSectionProps {
   urls: string;
@@ -27,6 +28,10 @@ export function HeroSection({
   }, [urls]);
 
   const urlCount = urls.trim() ? urls.trim().split("\n").filter((u) => u.trim()).length : 0;
+
+  const handleCsvUrls = (extractedUrls: string[]) => {
+    setUrls(extractedUrls.join("\n"));
+  };
 
   return (
     <section className="relative min-h-[60vh] flex flex-col items-center justify-center px-4 py-20">
@@ -160,6 +165,9 @@ export function HeroSection({
           </kbd>{" "}
           to generate
         </motion.p>
+
+        {/* CSV Upload Section */}
+        <CsvUpload onUrlsExtracted={handleCsvUrls} />
       </div>
     </section>
   );
