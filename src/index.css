@@ -1,0 +1,125 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Technical Minimalism Dark Theme - PRD Specified Colors */
+    --background: 0 0% 4%; /* #0A0A0A */
+    --foreground: 0 0% 100%; /* #FFFFFF */
+
+    --card: 0 0% 8%; /* #141414 */
+    --card-foreground: 0 0% 100%;
+
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 187 100% 50%; /* Electric cyan #00E5FF */
+    --primary-foreground: 0 0% 4%;
+
+    --secondary: 68 100% 50%; /* Neon lime #CCFF00 */
+    --secondary-foreground: 0 0% 4%;
+
+    --muted: 0 0% 13%; /* #222222 */
+    --muted-foreground: 0 0% 63%; /* #A0A0A0 */
+
+    --accent: 0 0% 13%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 13%; /* #222222 */
+    --input: 0 0% 13%;
+    --ring: 187 100% 50%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 4%;
+    --sidebar-foreground: 0 0% 63%;
+    --sidebar-primary: 187 100% 50%;
+    --sidebar-primary-foreground: 0 0% 4%;
+    --sidebar-accent: 0 0% 8%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 0% 13%;
+    --sidebar-ring: 187 100% 50%;
+
+    /* Custom colors */
+    --cyan: 187 100% 50%;
+    --lime: 68 100% 50%;
+    --surface: 0 0% 8%;
+    --text-body: 0 0% 63%;
+    --text-meta: 0 0% 40%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .text-cyan {
+    color: hsl(var(--cyan));
+  }
+  .text-lime {
+    color: hsl(var(--lime));
+  }
+  .bg-cyan {
+    background-color: hsl(var(--cyan));
+  }
+  .bg-lime {
+    background-color: hsl(var(--lime));
+  }
+  .border-cyan {
+    border-color: hsl(var(--cyan));
+  }
+  .glow-cyan {
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+  }
+  .glow-lime {
+    box-shadow: 0 0 20px rgba(204, 255, 0, 0.3);
+  }
+  .noise-texture {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.03;
+  }
+  .animate-shimmer {
+    animation: shimmer 1.5s ease-in-out infinite;
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 0%,
+      hsl(var(--surface)) 50%,
+      hsl(var(--muted)) 100%
+    );
+    background-size: 200% 100%;
+  }
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+  .dot-grid {
+    background-image: radial-gradient(circle, hsl(var(--muted)) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+}
