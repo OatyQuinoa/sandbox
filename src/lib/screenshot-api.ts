@@ -30,7 +30,7 @@ export async function generateScreenshot(url: string): Promise<ScreenshotResult>
 
   try {
     const response = await fetch(
-      `${SUPABASE_URL}/functions/v1/screenshot`,
+      `${SUPABASE_URL}/functions/v1/supabase-functions-screenshot`,
       {
         method: "POST",
         headers: {
