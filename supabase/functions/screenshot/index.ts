@@ -88,8 +88,11 @@ serve(async (req) => {
       viewport_width: "1280",
       viewport_height: "800",
       format: "png",
-      cache: "true",
-      cache_ttl: "86400", // Cache for 24 hours
+      cache: "false", // Disable cache to ensure fresh screenshots with banner blocking
+      block_cookie_banners: "true", // Block cookie banners for cleaner screenshots
+      block_ads: "true", // Block ads for cleaner screenshots
+      delay: "3", // Wait 3 seconds for page to fully load and banners to appear
+      scripts: "document.querySelectorAll('[class*=\"cookie\"], [class*=\"consent\"], [class*=\"gdpr\"], [id*=\"cookie\"], [id*=\"consent\"], [id*=\"gdpr\"], .cc-window, .cc-banner, #onetrust-consent-sdk, .onetrust-pc-dark-filter, [aria-label*=\"cookie\"], [aria-label*=\"consent\"]').forEach(el => el.remove());", // Custom script to remove cookie banners
     });
 
     const screenshotUrl = `https://api.screenshotone.com/take?${params.toString()}`;
