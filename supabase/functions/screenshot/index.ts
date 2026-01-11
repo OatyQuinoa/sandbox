@@ -27,6 +27,32 @@ function isValidUrl(url: string): boolean {
   }
 }
 
+// Strip consent-related query parameters that trigger cookie banners
+function sanitizeUrl(url: string): string {
+  try {
+    const parsed = new URL(url);
+    const consentParams = [
+      "consent-modal",
+      "consent",
+      "cookie-consent",
+      "gdpr",
+      "privacy",
+      "show-consent",
+      "showConsent",
+      "consent_modal",
+      "cookie_consent",
+    ];
+    
+    consentParams.forEach((param) => {
+      parsed.searchParams.delete(param);
+    });
+    
+    return parsed.toString();
+  } catch {
+    return url;
+  }
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -81,18 +107,55 @@ serve(async (req) => {
       );
     }
 
+    // Sanitize URL to remove consent-related query parameters
+    const cleanUrl = sanitizeUrl(body.url);
+
     // Construct ScreenshotOne API URL
     const params = new URLSearchParams({
       access_key: apiKey,
-      url: body.url,
+      url: cleanUrl,
       viewport_width: "1280",
       viewport_height: "800",
       format: "png",
       cache: "false", // Disable cache to ensure fresh screenshots with banner blocking
       block_cookie_banners: "true", // Block cookie banners for cleaner screenshots
+      block_banners_by_heuristics: "true", // Use heuristics to block banners that standard method misses
       block_ads: "true", // Block ads for cleaner screenshots
-      delay: "3", // Wait 3 seconds for page to fully load and banners to appear
-      scripts: "document.querySelectorAll('[class*=\"cookie\"], [class*=\"consent\"], [class*=\"gdpr\"], [id*=\"cookie\"], [id*=\"consent\"], [id*=\"gdpr\"], .cc-window, .cc-banner, #onetrust-consent-sdk, .onetrust-pc-dark-filter, [aria-label*=\"cookie\"], [aria-label*=\"consent\"]').forEach(el => el.remove());", // Custom script to remove cookie banners
+      delay: "2", // Wait 2 seconds for page to fully load
+      scripts: `
+        // Remove common cookie banner elements
+        const selectors = [
+          '[class*="cookie"]', '[class*="consent"]', '[class*="gdpr"]', '[class*="privacy"]',
+          '[id*="cookie"]', '[id*="consent"]', '[id*="gdpr"]', '[id*="privacy"]',
+          '[aria-label*="cookie"]', '[aria-label*="consent"]', '[aria-label*="privacy"]',
+          '.cc-window', '.cc-banner', '#onetrust-consent-sdk', '.onetrust-pc-dark-filter',
+          '[class*="CookieConsent"]', '[class*="PrivacyModal"]', '[class*="ConsentModal"]',
+          '[data-testid*="cookie"]', '[data-testid*="consent"]',
+          'div[role="dialog"][aria-modal="true"]'
+        ];
+        selectors.forEach(sel => {
+          document.querySelectorAll(sel).forEach(el => {
+            el.style.display = 'none';
+            el.style.visibility = 'hidden';
+            el.remove();
+          });
+        });
+        // Remove fixed/sticky overlays that might be consent banners
+        document.querySelectorAll('*').forEach(el => {
+          const style = getComputedStyle(el);
+          if ((style.position === 'fixed' || style.position === 'sticky') && 
+              (style.zIndex > 999 || el.getAttribute('role') === 'dialog')) {
+            const text = el.innerText?.toLowerCase() || '';
+            if (text.includes('cookie') || text.includes('consent') || text.includes('privacy') || 
+                text.includes('accept') || text.includes('agree') || text.includes('gdpr')) {
+              el.remove();
+            }
+          }
+        });
+        // Reset body overflow in case it was locked by a modal
+        document.body.style.overflow = 'auto';
+        document.documentElement.style.overflow = 'auto';
+      `,
     });
 
     const screenshotUrl = `https://api.screenshotone.com/take?${params.toString()}`;
