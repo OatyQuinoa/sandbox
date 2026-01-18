@@ -217,37 +217,31 @@ serve(async (req) => {
       execute: true,
       optimize: true,
       options: {
+        // Basic
         viewport_width: 1280,
         viewport_height: 800,
         format: "png",
         cache: false,
-        geolocation: "US",
-        wait_until: config.wait_until,
-        delay: config.delay,
-        timeout: config.timeout,
+    
+        // Blocking (let ScreenshotOne handle it)
         block_cookie_banners: true,
         block_banners_by_heuristics: true,
         block_ads: true,
-        ...(config.block_scripts
-          ? { block_scripts: true, scripts: BLOCK_BANNER_SCRIPTS }
-          : { scripts: FAST_BANNER_KILLER }),
+        block_chats: true,
+        
+        // Wait strategy (crucial for banner blocking)
+        wait_until: "networkidle2",
+        delay: 2,
+        timeout: 15000,
+        
+        // Bot detection prevention
+        stealth_mode: true,
         reduce_motion: true,
         ignore_host_errors: true,
-        stealth_mode: true,
-        styles: `
-          #onetrust-banner-sdk,
-          #onetrust-consent-sdk,
-          #onetrust-pc-sdk,
-          .onetrust-pc-dark-filter,
-          [id*="cookie-banner"],
-          [id*="consent-banner"],
-          [style*="z-index: 9999"],
-          [style*="z-index: 99999"] {
-            display: none !important;
-            visibility: hidden !important;
-          }
-          body { overflow: auto !important; }
-        `,
+        ip_country_code: "us",  // Rotate IPs via ScreenshotOne proxies
+        
+        // Fail fast on CAPTCHAs (optional)
+        fail_if_content_contains: "captcha",
       },
       requests: cleanUrls.map((url) => ({ url })),
     };
